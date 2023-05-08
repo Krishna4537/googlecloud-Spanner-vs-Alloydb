@@ -1,16 +1,23 @@
 "use strict";
 require("dotenv").config({ path: ".env" });
 const { Alloy } = require("@google-cloud/alloy");
-const database = new Alloy();
-const companiesTable = database.table("companies");
-const simulationsTable = database.table("simulations");
-const stocksTable = database.table("companyStocks");
+
+const alloy = new Alloy({
+  instanceId: "krs",
+  databaseId: "financedb",
+  projectId: "alloydb-krishna",
+});
+
+const companiesTable = alloy.table("companies");
+const simulationsTable = alloy.table("simulations");
+const stocksTable = alloy.table("companyStocks");
 
 async function insertData() {
   try {
-    const [data] = await database
-      .table("companies")
-      .read({ columns: ["companyName"], json: true });
+    const [data] = await companiesTable.read({
+      columns: ["companyName"],
+      json: true,
+    });
     if (data && data.length > 0) {
       throw {
         code: 409,
@@ -40,6 +47,7 @@ async function insertData() {
     console.error("DETAIL:", err.message);
   }
 }
+
 insertData();
 
 // 'use strict';
